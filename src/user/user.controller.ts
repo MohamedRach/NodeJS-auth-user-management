@@ -9,6 +9,7 @@ import {
     Patch,
     Post,
   } from '@nestjs/common';
+import { NewUser } from 'src/drizzle/schema';
 @Controller('user')
 export class UserController {
     constructor(private readonly service: UserService){}
@@ -18,6 +19,12 @@ export class UserController {
     }
     @Post("/")
     async AddUser() {
-        return this.service.AddUser()
+        const user: NewUser = {
+            firstName: "hamid",
+            lastName: "momo",
+            email: "hamid@gmail.com",
+            password: "343536"
+        }
+        return this.service.AddUser(user)
     }
 }
