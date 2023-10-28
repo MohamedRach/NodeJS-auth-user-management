@@ -1,5 +1,5 @@
-import { Controller, Get, Post, Body, Res} from '@nestjs/common';
-import {Response} from 'express'
+import { Controller, Get, Post, Body, Res, Req} from '@nestjs/common';
+import {Response, Request} from 'express'
 import { AppService } from './app.service';
 import { AuthService } from './auth/auth.service';
 import { NewUser } from './drizzle/schema';
@@ -26,5 +26,24 @@ export class AppController {
     const jwt = this.authService.signup(user)
     response.cookie('jwt', jwt, {httpOnly: true, domain: "localhost",});
     return jwt
+  }
+
+  @Get("/google/signup")
+  googleSignUp(@Res() res: Response) {
+    const url = this.authService.getGoogleAuthURL();
+    res.redirect(url)
+  }
+
+  @Get("/api/sessions/oauth/google")
+  redirect(@Req() req: Request, @Res() res: Response) {
+    const code = req.query.code as string;
+    const token = this.authService.googleAuth(code)
+    res.cookie("jwt", token, {
+      maxAge: 900000,
+      httpOnly: true,
+      secure: false,
+    })
+
+    res.redirect("/")
   }
 }
