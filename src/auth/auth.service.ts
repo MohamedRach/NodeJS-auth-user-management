@@ -130,7 +130,7 @@ export class AuthService {
           throw new Error(error.message);
         });
         const user = await this.userService.findOne(googleUser.email);
-        if(!user) {
+        if(user.length == 0) {
             const token = this.signup({
                 firstName: googleUser.given_name,
                 lastName: googleUser.family_name,
@@ -139,8 +139,11 @@ export class AuthService {
             })
     
             return token
+        } else {
+            //console.log(user)
+            return this.signToken(user[0].id, user[0].email)
         }
-        return this.signToken(user[0].id, user[0].email)
+        
         
     }
 

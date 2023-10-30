@@ -7,7 +7,7 @@ type login = {
     username: string,
     password: string
 }
-//@UseGuards(ApiKeyAuthGuard)
+@UseGuards(ApiKeyAuthGuard)
 @Controller('auth-users')
 export class AuthUsersController {
     constructor(private authUserService: AuthUsersService) {}
@@ -33,7 +33,7 @@ export class AuthUsersController {
         res.redirect(url)
     }
 
-    @Get("/api/sessions/oauth/google?")
+    @Get("/api/sessions/oauth/google")
     redirect(@Req() req: Request, @Res() res: Response, @Query("redirect") redirectUrl: string, @Req() request: Request) {
         const code = req.query.code as string;
         //@ts-ignore

@@ -24,6 +24,7 @@ export class UserService {
 
     async findOne(emailToFind: string) {
         const user = await this.db.select().from(schema.users).where(eq(schema.users.email, emailToFind))
+        //console.log(user)
         return user
     }
     async getApiKey(key: string) {
