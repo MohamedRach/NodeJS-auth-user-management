@@ -3,10 +3,12 @@ import {Response, Request} from 'express'
 import { AppService } from './app.service';
 import { AuthService } from './auth/auth.service';
 import { NewUser } from './drizzle/schema';
+
 type login =  {
   email: string,
   password: string
 }
+
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService, private authService: AuthService) {}
@@ -17,15 +19,18 @@ export class AppController {
   }
 
   @Post('/login')
-  login(@Body() user: login) {
-    return this.authService.login(user.email, user.password)
+  async login(@Body() user: login, @Res({passthrough: true}) response: Response) {
+    const jwt = await this.authService.login(user.email, user.password)
+    console.log(jwt)
+    response.cookie('jwt', jwt, {httpOnly: true, domain: "localhost",});
+    response.redirect("/")
   }
 
   @Post('/signUp')
-  signUp(@Body() user: NewUser, @Res({passthrough: true}) response: Response) {
-    const jwt = this.authService.signup(user)
+  async signUp(@Body() user: NewUser, @Res({passthrough: true}) response: Response) {
+    const jwt = await this.authService.signup(user)
     response.cookie('jwt', jwt, {httpOnly: true, domain: "localhost",});
-    return jwt
+    response.redirect("/")
   }
 
   @Get("/google/signup")
@@ -35,9 +40,9 @@ export class AppController {
   }
 
   @Get("/api/sessions/oauth/google")
-  redirect(@Req() req: Request, @Res() res: Response) {
+  async redirect(@Req() req: Request, @Res() res: Response) {
     const code = req.query.code as string;
-    const token = this.authService.googleAuth(code)
+    const token = await this.authService.googleAuth(code)
     res.cookie("jwt", token, {
       maxAge: 900000,
       httpOnly: true,

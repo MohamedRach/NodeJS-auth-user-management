@@ -9,6 +9,7 @@ export const users = mysqlTable("users", {
     lastName: varchar("lastName", {length: 100}),
     email: varchar("email", {length: 250}),
     password: varchar("password", {length: 500}),
+    apiKey: varchar("apiKey", {length: 700}),
 })
 
 export const usersOfUsers = mysqlTable("usersOfUsers", {
@@ -35,5 +36,5 @@ export type User = typeof users.$inferSelect;
 export type UserOfUser = typeof usersOfUsers.$inferSelect;
 
 export type NewUser = typeof users.$inferInsert;
-export type NewUserOfUser = typeof users.$inferInsert;
+export type NewUserOfUser = typeof usersOfUsers.$inferInsert;
 

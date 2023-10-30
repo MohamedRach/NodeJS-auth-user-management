@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, ForbiddenException } from '@nestjs/common';
 import * as schema from '../drizzle/schema'
 import { NewUser } from '../drizzle/schema';
 import { DrizzleAsyncProvider } from 'src/drizzle/drizzle.provider';
@@ -24,6 +24,10 @@ export class UserService {
 
     async findOne(emailToFind: string) {
         const user = await this.db.select().from(schema.users).where(eq(schema.users.email, emailToFind))
+        return user
+    }
+    async getApiKey(key: string) {
+        const user = await this.db.select().from(schema.users).where(eq(schema.users.apiKey, key))
         return user
     }
 }

@@ -7,8 +7,9 @@ import { AuthService } from "../auth.service";
 export class ApiKeyStrategy extends PassportStrategy(HeaderAPIKeyStrategy, 'api-key') {
     constructor(private authService: AuthService) {
         super({header: "api-key", prefix: ''}, true, async (apiKey, done) => {
-            if (this.authService.validateApiKey(apiKey)) {
-                done(null, true)
+            const id = this.authService.validateApiKey(apiKey)
+            if (id) {
+                done(null, id)
             }
             done(new UnauthorizedException(), null)
         })

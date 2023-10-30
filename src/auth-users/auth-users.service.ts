@@ -1,27 +1,17 @@
 import { Injectable, ForbiddenException } from '@nestjs/common';
+import { NewUserOfUser } from 'src/drizzle/schema';
 import { JwtService } from '@nestjs/jwt/dist';
+import { UsersOfUserService } from 'src/users-of-user/users-of-user.service';
 import * as argon from 'argon2';
-import { NewUser } from 'src/drizzle/schema';
-import { UserService } from 'src/user/user.service';
-import { randomBytes } from 'crypto';
 @Injectable()
-export class AuthService {
-    constructor(private userService: UserService, private jwtService: JwtService){}
-    async validateApiKey(apiKey: string) {
-        const user = await this.userService.getApiKey(apiKey)
-        if(user.length == 0) {
-            return new ForbiddenException()
-        }
-        return {id: user[0].id}
-    }
-
-    async signup(user: NewUser) { 
+export class AuthUsersService {
+    constructor(private userService: UsersOfUserService, private jwtService: JwtService){}
+    async signup(user: NewUserOfUser, id: number) { 
         //console.log(user.password)
-        
-        const apiKey = this.generateApiKey();
+        // @ts-ignore
         const hash = await argon.hash(user.password);
         try {
-            const userADD = await this.userService.AddUser({...user, password: hash, apiKey})
+            const userADD = await this.userService.AddUser({...user, password: hash}, id)
                 //return jwt token
             // @ts-ignore
             return this.signToken(userADD.insertId, user.email)
@@ -29,8 +19,8 @@ export class AuthService {
                 throw new Error(error)
             }   
     }
-    async login(email: string, password: string) {
-        const user = await this.userService.findOne(email);
+    async login(email: string, password: string, id: number) {
+        const user = await this.userService.findOne(email, id);
         if(!user) throw new ForbiddenException("Email Not Found")
         //compare password
         const pwMatches = await argon.verify(user[0].password, password)
@@ -109,7 +99,7 @@ export class AuthService {
         })
     }
 
-    async googleAuth(code: string) {
+    async googleAuth(code: string, id: number) {
         const { id_token, access_token} = await this.getToken({
             code,
             clientId: process.env.GOOGLE_CLIENT_ID,
@@ -129,24 +119,19 @@ export class AuthService {
           console.error(`Failed to fetch user`);
           throw new Error(error.message);
         });
-        const user = await this.userService.findOne(googleUser.email);
+
+        const user = await this.userService.findOne(googleUser.email, id);
         if(!user) {
             const token = this.signup({
-                firstName: googleUser.given_name,
-                lastName: googleUser.family_name,
+                username: `${googleUser.given_name}${googleUser.family_name.toUpperCase()}`,
                 email: googleUser.email,
                 password: process.env.DEFAULT_PASSWORD
-            })
+            }, id)
     
             return token
         }
         return this.signToken(user[0].id, user[0].email)
         
-    }
-
-    generateApiKey(): string {
-        const bytes = randomBytes(Math.ceil(32 / 2));
-        const apiKey = bytes.toString('hex').slice(0, 32);
-        return apiKey;
+        
     }
 }

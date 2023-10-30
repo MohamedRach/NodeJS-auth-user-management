@@ -4,6 +4,7 @@ import { ApiKeyStrategy } from './strategy/apikey.strategy';
 import {PassportModule} from '@nestjs/passport'
 import { UserModule } from 'src/user/user.module';
 import { JwtModule } from '@nestjs/jwt/dist';
+import { JwtStrategy } from './strategy/jwt.strategy';
 
 @Module({
   imports: [
@@ -13,7 +14,7 @@ import { JwtModule } from '@nestjs/jwt/dist';
       signOptions: {expiresIn: '1d'}
     }),
     PassportModule],
-  providers: [AuthService, ApiKeyStrategy],
+  providers: [AuthService, ApiKeyStrategy, JwtStrategy],
   exports: [AuthService]
 })
 export class AuthModule {}
