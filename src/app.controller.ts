@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Res, Req} from '@nestjs/common';
+import { Controller, Get, Post, Body, Res, Req, Render} from '@nestjs/common';
 import {Response, Request} from 'express'
 import { AppService } from './app.service';
 import { AuthService } from './auth/auth.service';
@@ -13,9 +13,10 @@ type login =  {
 export class AppController {
   constructor(private readonly appService: AppService, private authService: AuthService) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @Get('/')
+  @Render('index')
+  getHello(){
+    //return this.appService.getHello();
   }
 
   @Post('/login')
