@@ -21,6 +21,7 @@ export class UsersOfUserService {
         return users
     }
     async findOne(emailToFind: string, id: number) {
+        console.log(id)
         const user = await this.db.select().from(schema.usersOfUsers).where(and(eq(schema.usersOfUsers.email, emailToFind), eq(schema.usersOfUsers.user_id, id)))
         return user
     }

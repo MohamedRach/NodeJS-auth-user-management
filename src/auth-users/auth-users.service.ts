@@ -21,10 +21,10 @@ export class AuthUsersService {
     }
     async login(email: string, password: string, id: number) {
         const user = await this.userService.findOne(email, id);
-        if(!user) throw new ForbiddenException("Email Not Found")
+        if(user.length == 0) throw new ForbiddenException("Incorrect email")
         //compare password
         const pwMatches = await argon.verify(user[0].password, password)
-        if(!pwMatches) throw new ForbiddenException("Incorrect Password")
+        if(!pwMatches) return  new ForbiddenException("Incorrect Password")
         
         //return jwt token
         return this.signToken(user[0].id, user[0].email)
@@ -45,8 +45,7 @@ export class AuthUsersService {
         
     }
     getGoogleAuthURL() {
-        console.log(process.env.GOOGLE_CLIENT_ID)
-        const redirectURI = "api/sessions/oauth/google"
+        const redirectURI = "auth-users/api/sessions/oauth/google"
         const rootURL = "https://accounts.google.com/o/oauth2/v2/auth"
         const options = {
             redirect_uri: `${process.env.SERVER_ROOT_URI}/${redirectURI}`,
@@ -99,12 +98,12 @@ export class AuthUsersService {
         })
     }
 
-    async googleAuth(code: string, id: number) {
+    async googleAuth(code: string) {
         const { id_token, access_token} = await this.getToken({
             code,
             clientId: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            redirectUri: `${process.env.SERVER_ROOT_URI}/api/sessions/oauth/google`
+            redirectUri: `${process.env.SERVER_ROOT_URI}/auth-users/api/sessions/oauth/google`
         })
         const googleUser = await fetch(
           `https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${access_token}`,
@@ -120,17 +119,13 @@ export class AuthUsersService {
           throw new Error(error.message);
         });
 
-        const user = await this.userService.findOne(googleUser.email, id);
-        if(!user) {
-            const token = this.signup({
-                username: `${googleUser.given_name}${googleUser.family_name.toUpperCase()}`,
-                email: googleUser.email,
-                password: process.env.DEFAULT_PASSWORD
-            }, id)
-    
-            return token
+        return {
+            firstName: googleUser.given_name,
+            lastName: googleUser.family_name,
+            email: googleUser.email,
+            password: process.env.DEFAULT_PASSWORD
         }
-        return this.signToken(user[0].id, user[0].email)
+       
         
         
     }

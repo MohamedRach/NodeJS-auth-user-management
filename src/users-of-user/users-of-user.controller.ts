@@ -2,10 +2,8 @@ import { Controller, Get, Delete, Patch, Req, Body, Param, UseGuards } from '@ne
 import { UsersOfUserService } from './users-of-user.service';
 import { Request } from 'express';
 import { NewUser } from 'src/drizzle/schema';
-import { ApiKeyAuthGuard } from 'src/auth/guard/apikey-auth.guard';
-import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
-
-@UseGuards(ApiKeyAuthGuard, JwtAuthGuard)
+import { AuthGuard } from '@nestjs/passport';
+@UseGuards(AuthGuard(["jwt", "api-key"]))
 @Controller('users')
 export class UsersOfUserController {
     constructor(private userService: UsersOfUserService) {}
