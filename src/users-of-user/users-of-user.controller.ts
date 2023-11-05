@@ -1,7 +1,7 @@
-import { Controller, Get, Delete, Patch, Req, Body, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Delete, Patch, Req, Body, Param, UseGuards, Post } from '@nestjs/common';
 import { UsersOfUserService } from './users-of-user.service';
 import { Request } from 'express';
-import { NewUser } from 'src/drizzle/schema';
+import { NewUser, UserOfUser } from 'src/drizzle/schema';
 import { AuthGuard } from '@nestjs/passport';
 @UseGuards(AuthGuard(["jwt", "api-key"]))
 @Controller('users')
@@ -11,6 +11,12 @@ export class UsersOfUserController {
     async getAllUsers(@Req() req: Request) {
         //@ts-ignore
         return this.userService.getUsers(req.user.id)
+    }
+
+    @Post("/")
+    async AddUser(@Body() user: UserOfUser, @Req() req: Request) {
+        //@ts-ignore
+        return this.userService.AddUser(user, req.user.id)
     }
     @Get('/:email')
     async findOne(@Req() req: Request, @Param("email") email: string) {

@@ -1,4 +1,4 @@
-import { Controller, Post, Res, Body, Get, Req, UseGuards, Query } from '@nestjs/common';
+import { Controller, Post, Res, Body, Get, Req, UseGuards, Query, Param } from '@nestjs/common';
 import {Response, Request} from 'express'
 import { AuthUsersService } from './auth-users.service';
 import { NewUserOfUser, User } from 'src/drizzle/schema';
@@ -32,17 +32,22 @@ export class AuthUsersController {
         }
         
     }
+    @UseGuards(ApiKeyAuthGuard)
     @Get("/google/signup")
-    googleSignUp(@Res() res: Response) {
+    googleSignUp(@Res() res: Response, @Query("redirect") redirect: string, @Req() req: Request) {
         const url = this.authUserService.getGoogleAuthURL();
+        //@ts-ignore
+        res.cookie("redirect", {redirect , id: req.user.id})
         return res.redirect(url)
     }
     
     @Get("/api/sessions/oauth/google")
-    redirect(@Req() req: Request) {
+    async redirect(@Req() req: Request, @Res() res: Response) {
         const code = req.query.code as string;
-        const user = this.authUserService.googleAuth(code)
-        return user
+        //@ts-ignore
+        const jwt = await this.authUserService.googleAuth(code, req.cookies.redirect.id)
+        res.cookie('jwt', jwt, {httpOnly: true});
+        res.redirect(req.cookies.redirect.redirect)
 
         
     }

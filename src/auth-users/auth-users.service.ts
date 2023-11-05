@@ -98,7 +98,7 @@ export class AuthUsersService {
         })
     }
 
-    async googleAuth(code: string) {
+    async googleAuth(code: string, id: number) {
         const { id_token, access_token} = await this.getToken({
             code,
             clientId: process.env.GOOGLE_CLIENT_ID,
@@ -118,13 +118,20 @@ export class AuthUsersService {
           console.error(`Failed to fetch user`);
           throw new Error(error.message);
         });
+        const user = await this.userService.findOne(googleUser.email, id)
+        if(user.length == 0) {
+            const jwt  = await this.signup( {
+                username: `${googleUser.family_name}_${googleUser.given_name}`,
+                email: googleUser.email,
+                password: process.env.DEFAULT_PASSWORD
+            }, id)
 
-        return {
-            firstName: googleUser.given_name,
-            lastName: googleUser.family_name,
-            email: googleUser.email,
-            password: process.env.DEFAULT_PASSWORD
+            return jwt 
+        } else {
+            const jwt = await this.login(googleUser.email, process.env.DEFAULT_PASSWORD, id)
+            return jwt 
         }
+        
        
         
         
