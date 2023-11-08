@@ -29,6 +29,7 @@ export class AppController {
   @Post('/signUp')
   async signUp(@Body() user: NewUser, @Res({passthrough: true}) response: Response) {
     const jwt = await this.authService.signup(user)
+    
     response.cookie('jwt', jwt, {httpOnly: true});
   }
 
