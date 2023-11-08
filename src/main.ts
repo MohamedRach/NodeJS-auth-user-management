@@ -3,7 +3,7 @@ import { AppModule } from './app.module';
 import * as cookieParser from 'cookie-parser';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  var whitelist = ['http://localhost:5173', 'https://www.website.com'];
+  var whitelist = ['http://localhost:5173', 'https://auth-user-management.onrender.com'];
   app.use(cookieParser());
   app.enableCors({
     origin: function (origin, callback) {
