@@ -22,15 +22,14 @@ export class AppController {
   async login(@Body() user: login, @Res({passthrough: true}) response: Response) {
     const jwt = await this.authService.login(user.email, user.password)
     console.log(jwt)
-    response.cookie('jwt', jwt, {httpOnly: true, domain: "localhost",});
-    response.redirect("/")
+    response.cookie('jwt', jwt, {httpOnly: true});
+    
   }
 
   @Post('/signUp')
   async signUp(@Body() user: NewUser, @Res({passthrough: true}) response: Response) {
     const jwt = await this.authService.signup(user)
-    response.cookie('jwt', jwt, {httpOnly: true, domain: "localhost",});
-    response.redirect("/")
+    response.cookie('jwt', jwt, {httpOnly: true});
   }
 
   @Get("/google/signup")
@@ -49,6 +48,6 @@ export class AppController {
       secure: false,
     })
 
-    res.redirect("/")
+    
   }
 }
