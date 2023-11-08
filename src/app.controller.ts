@@ -22,6 +22,7 @@ export class AppController {
   async login(@Body() user: login, @Res({passthrough: true}) response: Response) {
     const jwt = await this.authService.login(user.email, user.password)
     console.log(jwt)
+    response.set("Access-Control-Allow-Credentials", "true")
     response.cookie('jwt', jwt.access_token,{
       maxAge: 900000,
       httpOnly: true,
@@ -34,7 +35,7 @@ export class AppController {
   @Post('/signUp')
   async signUp(@Body() user: NewUser, @Res({passthrough: true}) response: Response) {
     const jwt = await this.authService.signup(user)
-    
+    response.set("Access-Control-Allow-Credentials", "true")
     response.cookie('jwt', jwt.access_token, {
       maxAge: 900000,
       httpOnly: true,
