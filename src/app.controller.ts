@@ -22,7 +22,12 @@ export class AppController {
   async login(@Body() user: login, @Res({passthrough: true}) response: Response) {
     const jwt = await this.authService.login(user.email, user.password)
     console.log(jwt)
-    response.cookie('jwt', jwt, {httpOnly: true});
+    response.cookie('jwt', jwt,{
+      maxAge: 900000,
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none'
+    });
     
   }
 
@@ -30,7 +35,12 @@ export class AppController {
   async signUp(@Body() user: NewUser, @Res({passthrough: true}) response: Response) {
     const jwt = await this.authService.signup(user)
     
-    response.cookie('jwt', jwt, {httpOnly: true});
+    response.cookie('jwt', jwt, {
+      maxAge: 900000,
+      httpOnly: true,
+      secure: true,
+      sameSite: 'none'
+    });
   }
 
   @Get("/google/signup")
@@ -46,7 +56,8 @@ export class AppController {
     res.cookie("jwt", token, {
       maxAge: 900000,
       httpOnly: true,
-      secure: false,
+      secure: true,
+      sameSite: 'none'
     })
 
     
