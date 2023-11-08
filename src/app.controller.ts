@@ -22,7 +22,7 @@ export class AppController {
   async login(@Body() user: login, @Res({passthrough: true}) response: Response) {
     const jwt = await this.authService.login(user.email, user.password)
     console.log(jwt)
-    response.cookie('jwt', jwt,{
+    response.cookie('jwt', jwt.access_token,{
       maxAge: 900000,
       httpOnly: true,
       secure: true,
@@ -35,7 +35,7 @@ export class AppController {
   async signUp(@Body() user: NewUser, @Res({passthrough: true}) response: Response) {
     const jwt = await this.authService.signup(user)
     
-    response.cookie('jwt', jwt, {
+    response.cookie('jwt', jwt.access_token, {
       maxAge: 900000,
       httpOnly: true,
       secure: true,
@@ -53,7 +53,8 @@ export class AppController {
   async redirect(@Req() req: Request, @Res() res: Response) {
     const code = req.query.code as string;
     const token = await this.authService.googleAuth(code)
-    res.cookie("jwt", token, {
+    res.set("Access-Control-Allow-Credentials", "true")
+    res.cookie("jwt", token.access_token, {
       maxAge: 900000,
       httpOnly: true,
       secure: true,
