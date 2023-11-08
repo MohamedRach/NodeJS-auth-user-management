@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Res, Req} from '@nestjs/common';
+import { Controller, Get, Post, Body, Res, Req, Query} from '@nestjs/common';
 import {Response, Request} from 'express'
 import { AppService } from './app.service';
 import { AuthService } from './auth/auth.service';
@@ -19,7 +19,7 @@ export class AppController {
   }
 
   @Post('/login')
-  async login(@Body() user: login, @Res({passthrough: true}) response: Response) {
+  async login(@Body() user: login, @Res({passthrough: true}) response: Response, @Query("redirect") redirect: string) {
     const jwt = await this.authService.login(user.email, user.password)
     console.log(jwt)
     response.set("Access-Control-Allow-Credentials", "true")
@@ -29,11 +29,12 @@ export class AppController {
       secure: true,
       sameSite: 'none'
     });
+    response.redirect(redirect)
     
   }
 
   @Post('/signUp')
-  async signUp(@Body() user: NewUser, @Res({passthrough: true}) response: Response) {
+  async signUp(@Body() user: NewUser, @Res({passthrough: true}) response: Response, @Query("redirect") redirect: string) {
     const jwt = await this.authService.signup(user)
     response.set("Access-Control-Allow-Credentials", "true")
     response.cookie('jwt', jwt.access_token, {
@@ -42,11 +43,13 @@ export class AppController {
       secure: true,
       sameSite: 'none'
     });
+    response.redirect(redirect)
   }
 
   @Get("/google/signup")
-  googleSignUp(@Res() res: Response) {
+  googleSignUp(@Res() res: Response, @Query('redirect') redirect: string) {
     const url = this.authService.getGoogleAuthURL();
+    res.cookie("redirect", redirect)
     res.redirect(url)
   }
 
@@ -61,7 +64,7 @@ export class AppController {
       secure: true,
       sameSite: 'none'
     })
-
+    res.redirect(req.cookies.redirect)
     
   }
 }
