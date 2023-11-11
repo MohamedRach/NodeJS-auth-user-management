@@ -1,9 +1,9 @@
-import { Controller, Get, Post, Body, Res, Req, Query} from '@nestjs/common';
+import { Controller, Get, Post, Body, Res, Req, Query, UseGuards} from '@nestjs/common';
 import {Response, Request} from 'express'
 import { AppService } from './app.service';
 import { AuthService } from './auth/auth.service';
 import { NewUser } from './drizzle/schema';
-
+import { AuthGuard } from '@nestjs/passport';
 type login =  {
   email: string,
   password: string
@@ -68,6 +68,7 @@ export class AppController {
     
     
   }
+  @UseGuards(AuthGuard(["jwt", "api-key"]))
   @Get("/apiKey")
   async getApiKey(@Req() req: Request) {
     //@ts-ignore
