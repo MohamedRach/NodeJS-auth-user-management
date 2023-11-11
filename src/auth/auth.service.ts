@@ -152,4 +152,9 @@ export class AuthService {
         const apiKey = bytes.toString('hex').slice(0, 32);
         return apiKey;
     }
+
+    async getApiKey(id: number) {
+        const api_key = await this.userService.getApiKeyById(id);
+        return api_key   
+    }
 }

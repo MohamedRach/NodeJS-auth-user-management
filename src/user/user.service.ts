@@ -31,4 +31,8 @@ export class UserService {
         const user = await this.db.select().from(schema.users).where(eq(schema.users.apiKey, key))
         return user
     }
+    async getApiKeyById(id: number) {
+        const api_key = await this.db.select().from(schema.users).where(eq(schema.users.id, id))
+        return api_key
+    }
 }

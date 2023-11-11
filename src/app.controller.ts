@@ -22,6 +22,7 @@ export class AppController {
   async login(@Body() user: login, @Res({passthrough: true}) response: Response, @Query("redirect") redirect: string) {
     const jwt = await this.authService.login(user.email, user.password)
     console.log(jwt)
+    response.set("Access-Control-Allow-Origin", "http://localhost:5173/");
     response.set("Access-Control-Allow-Credentials", "true")
     response.cookie('jwt', jwt.access_token,{
       maxAge: 900000,
@@ -36,6 +37,7 @@ export class AppController {
   @Post('/signUp')
   async signUp(@Body() user: NewUser, @Res({passthrough: true}) response: Response, @Query("redirect") redirect: string) {
     const jwt = await this.authService.signup(user)
+    response.set("Access-Control-Allow-Origin", "http://localhost:5173/");
     response.set("Access-Control-Allow-Credentials", "true")
     response.cookie('jwt', jwt.access_token, {
       maxAge: 900000,
@@ -57,6 +59,7 @@ export class AppController {
   async redirect(@Req() req: Request, @Res() res: Response) {
     const code = req.query.code as string;
     const token = await this.authService.googleAuth(code)
+    res.set("Access-Control-Allow-Origin", "http://localhost:5173/");
     res.set("Access-Control-Allow-Credentials", "true")
     res.cookie("jwt", token.access_token, {
       maxAge: 900000,
@@ -66,5 +69,11 @@ export class AppController {
     })
     res.redirect(req.cookies.redirect)
     
+  }
+  @Get("/apiKey")
+  async getApiKey(@Req() req: Request) {
+    //@ts-ignore
+    const api_key = await this.authService.getApiKey(req.user.id)
+    return api_key
   }
 }
