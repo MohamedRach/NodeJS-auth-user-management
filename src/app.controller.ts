@@ -72,7 +72,10 @@ export class AppController {
   @Get("/apiKey")
   async getApiKey(@Req() req: Request) {
     //@ts-ignore
+    console.log(req.user.id)
+     //@ts-ignore
     const api_key = await this.authService.getApiKey(req.user.id)
+    console.log(api_key)
     return api_key
   }
 }
