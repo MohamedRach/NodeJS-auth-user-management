@@ -71,11 +71,9 @@ export class AppController {
   @UseGuards(AuthGuard(["jwt", "api-key"]))
   @Get("/apiKey")
   async getApiKey(@Req() req: Request) {
-    //@ts-ignore
-    console.log(req.user.id)
      //@ts-ignore
-    const api_key = await this.authService.getApiKey(req.user.id)
-    console.log(api_key)
+    const api_key = await this.authService.getApiKey(req.user.userId)
+    
     return api_key
   }
 }
