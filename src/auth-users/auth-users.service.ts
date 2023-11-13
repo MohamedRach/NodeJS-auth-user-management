@@ -22,12 +22,15 @@ export class AuthUsersService {
     async login(email: string, password: string, id: number) {
         const user = await this.userService.findOne(email, id);
         if(user.length == 0) throw new ForbiddenException("Incorrect email")
+        console.log(user)
         //compare password
+        console.log(user[0].password, password)
+        console.log(await argon.verify(user[0].password, password))
         const pwMatches = await argon.verify(user[0].password, password)
-        if(!pwMatches) return  new ForbiddenException("Incorrect Password")
-        
+        if(!pwMatches) throw  new ForbiddenException("Incorrect Password")
+        console.log(pwMatches)
         //return jwt token
-        return this.signToken(user[0].id, user[0].email)
+        return await this.signToken(user[0].id, user[0].email)
         
     }
     async signToken(userId: number, email: string) {

@@ -17,7 +17,7 @@ export class AuthUsersController {
         //@ts-ignore
         const jwt = await this.authUserService.signup(user, request.user.id)
         response.cookie('jwt', jwt, {httpOnly: true, domain: "localhost",});
-        response.redirect(redirectUrl)
+        return true
     }
     @UseGuards(ApiKeyAuthGuard)
     @Post('/login?')
@@ -25,11 +25,19 @@ export class AuthUsersController {
         //const id = request;
         //@ts-ignore
         const jwt = await this.authUserService.login(user.email, user.password, request.user.id)
-        console.log(jwt)
-        if (jwt ){
-            response.cookie('jwt', jwt, {httpOnly: true, domain: "localhost",});
-            response.redirect(redirectUrl)
-        }
+        console.log(jwt.access_token)
+       
+        
+            response.set("Access-Control-Allow-Credentials", "true")
+            response.cookie("jwt", jwt, {
+            maxAge: 900000,
+            httpOnly: true,
+            secure: true,
+            sameSite: 'none'
+            })
+            
+            return jwt
+        
         
     }
     @UseGuards(ApiKeyAuthGuard)

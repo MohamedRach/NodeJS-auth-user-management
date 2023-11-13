@@ -16,12 +16,13 @@ export class AppController {
   @Get('/')
   getHello(){
     //return this.appService.getHello();
+    return "hello world"
   }
 
   @Post('/login')
   async login(@Body() user: login, @Res({passthrough: true}) response: Response, @Query("redirect") redirect: string) {
     const jwt = await this.authService.login(user.email, user.password)
-    console.log(jwt)
+    
     
     response.set("Access-Control-Allow-Credentials", "true")
     response.cookie('jwt', jwt.access_token,{
