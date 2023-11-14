@@ -13,49 +13,39 @@ export class AuthUsersController {
     constructor(private authUserService: AuthUsersService) {}
     @UseGuards(ApiKeyAuthGuard)
     @Post('/signup')
-    async signUp(@Body() user: NewUserOfUser, @Res({passthrough: true}) response: Response, @Query("redirect") redirectUrl: string, @Req() request: Request) {
+    async signUp(@Body() user: NewUserOfUser, @Req() request: Request) {
         //@ts-ignore
         const jwt = await this.authUserService.signup(user, request.user.id)
-        response.cookie('jwt', jwt, {httpOnly: true, domain: "localhost",});
-        return true
+        return jwt
     }
     @UseGuards(ApiKeyAuthGuard)
     @Post('/login?')
-    async login(@Body() user: login,@Query("redirect") redirectUrl: string, @Res() response: Response, @Req() request: Request) {
+    async login(@Body() user: login,@Req() request: Request) {
         //const id = request;
         //@ts-ignore
-        const jwt = await this.authUserService.login(user.email, user.password, request.user.id)
-        console.log(jwt.access_token)
-       
+        return this.authUserService.login(user.email, user.password, request.user.id)
         
-            response.set("Access-Control-Allow-Credentials", "true")
-            response.cookie("jwt", jwt, {
-            maxAge: 900000,
-            httpOnly: true,
-            secure: true,
-            sameSite: 'none'
-            })
-            
-            return jwt
         
         
     }
     @UseGuards(ApiKeyAuthGuard)
     @Get("/google/signup")
-    googleSignUp(@Res() res: Response, @Query("redirect") redirect: string, @Req() req: Request) {
+    googleSignUp(@Res() res: Response,@Req() req: Request) {
         const url = this.authUserService.getGoogleAuthURL();
         //@ts-ignore
-        res.cookie("redirect", {redirect , id: req.user.id})
-        return res.redirect(url)
+        res.cookie("redirect", {id: req.user.id})
+        res.redirect(url)
     }
     
     @Get("/api/sessions/oauth/google")
-    async redirect(@Req() req: Request, @Res() res: Response) {
+    async redirect(@Req() req: Request) {
         const code = req.query.code as string;
+
         //@ts-ignore
+
         const jwt = await this.authUserService.googleAuth(code, req.cookies.redirect.id)
-        res.cookie('jwt', jwt, {httpOnly: true});
-        res.redirect(req.cookies.redirect.redirect)
+        
+        return jwt
 
         
     }
