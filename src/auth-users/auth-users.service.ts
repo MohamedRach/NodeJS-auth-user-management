@@ -20,7 +20,7 @@ export class AuthUsersService {
             }   
     }
     async login(email: string, password: string, id: number) {
-        const user = await this.userService.findOne(email, id);
+        const user = await this.userService.findOneByEmail(email, id);
         if(user.length == 0) throw new ForbiddenException("Incorrect email")
         
         const pwMatches = await argon.verify(user[0].password, password)

@@ -8,10 +8,12 @@ export class UsersOfUserService {
     constructor(@Inject(DrizzleAsyncProvider) private db: MySql2Database<typeof schema>) {}
 
     async AddUser(user: schema.NewUserOfUser, id: number) {
+       
         const users = await this.db.insert(schema.usersOfUsers).values({...user, user_id: id});
         // @ts-ignore
         //console.log(users.insertId)
-        return users
+        
+        return {success: true}
     }
     async getUsers(id: number) {
         const users = await this.db.query.usersOfUsers.findMany({
@@ -21,8 +23,11 @@ export class UsersOfUserService {
         return users
     }
     async findOne(idToFind: number, id: number) {
-        console.log(id)
         const user = await this.db.select().from(schema.usersOfUsers).where(and(eq(schema.usersOfUsers.id, idToFind), eq(schema.usersOfUsers.user_id, id)))
+        return user
+    }
+    async findOneByEmail(emailToFind: string, id: number) {
+        const user = await this.db.select().from(schema.usersOfUsers).where(and(eq(schema.usersOfUsers.email, emailToFind), eq(schema.usersOfUsers.user_id, id)))
         return user
     }
 
