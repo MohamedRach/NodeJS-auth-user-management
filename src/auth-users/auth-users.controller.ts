@@ -30,22 +30,28 @@ export class AuthUsersController {
     }
     @UseGuards(ApiKeyAuthGuard)
     @Get("/google/signup")
-    googleSignUp(@Res() res: Response,@Req() req: Request) {
+    googleSignUp(@Res() res: Response,@Req() req: Request, @Query("redirect") redirect: string) {
         const url = this.authUserService.getGoogleAuthURL();
         //@ts-ignore
-        res.cookie("redirect", {id: req.user.id})
+        res.cookie("redirect", {id: req.user.id, redirect})
         res.redirect(url)
     }
     
     @Get("/api/sessions/oauth/google")
-    async redirect(@Req() req: Request) {
+    async redirect(@Req() req: Request, @Res() res: Response) {
         const code = req.query.code as string;
 
         //@ts-ignore
 
         const jwt = await this.authUserService.googleAuth(code, req.cookies.redirect.id)
+        res.cookie("jwt", jwt.access_token, {
+            maxAge: 900000,
+            httpOnly: true,
+            secure: true,
+            sameSite: 'none'
+        })
+        res.redirect(req.cookies.redirect.redirect)
         
-        return jwt
 
         
     }
