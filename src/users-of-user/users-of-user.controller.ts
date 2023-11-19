@@ -18,10 +18,10 @@ export class UsersOfUserController {
         //@ts-ignore
         return this.userService.AddUser(user, req.user.id)
     }
-    @Get('/:email')
-    async findOne(@Req() req: Request, @Param("email") email: string) {
+    @Get('/:id')
+    async findOne(@Req() req: Request, @Param("id") id: string) {
         //@ts-ignore
-        return this.userService.findOne(email, req.user.id)
+        return this.userService.findOne(+id, req.user.id)
     }
     @Patch("/update/:id")
     async UpdateUser(@Param("id") id: number, @Body() user: NewUser) {
