@@ -32,6 +32,7 @@ export class AuthUsersController {
     @Get("/google/signup")
     googleSignUp(@Res() res: Response,@Req() req: Request, @Query("redirect") redirect: string) {
         const url = this.authUserService.getGoogleAuthURL();
+        //res.send(true)
         //@ts-ignore
         res.cookie("redirect", {id: req.user.id, redirect})
         res.redirect(url)
