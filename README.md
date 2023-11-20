@@ -7,6 +7,7 @@ This project is an open source API that enable developers to organize user inter
 * Developers can also offer authentification with google.
 * Developers can manage their users easily.
 * Please check this [example Application](https://github.com/MohamedRach/auth-and-user-management-app-example) to see how to work with the API
+* To get your API Key create an account or login [here](https://auth-user-management-front.vercel.app/signup) 
 ### API Endpoints
 | HTTP Verbs | Endpoints | Action |
 | --- | --- | --- |
