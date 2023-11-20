@@ -19,7 +19,7 @@ This project is an open source API that enable developers to organize user inter
 | POST | /auth-users/login| To Login a user |
 ### Technologies Used
 * [NodeJS](https://nodejs.org/) This is a cross-platform runtime environment built on Chrome's V8 JavaScript engine used in running JavaScript codes on the server. It allows for installation and managing of dependencies and communication with databases.
-* [NestJS](https://www.expresjs.org/) This is a NodeJS web application framework.
+* [NestJS](https://docs.nestjs.com/) This is a NodeJS web application framework.
 * [PlanetScale](https://planetscale.com/) PlanetScale is a MySQL-compatible serverless database that brings you scale, performance, and reliability — without sacrificing developer experience.
 * [Drizzle ORM](https://orm.drizzle.team/) Drizzle ORM is a lightweight and intuitive Object-Relational Mapping (ORM) 
 
