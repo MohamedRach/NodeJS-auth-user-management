@@ -16,7 +16,7 @@ This project is an open source API that enable developers to organize user inter
 | PATCH | /users/update/:id | To update a user |
 | DELETE | /users/delete/:id | To delete a user|
 | POST | /auth-users/signup | To signUp a user |
-| DELETE | /auth-users/login| To Login a user |
+| POST | /auth-users/login| To Login a user |
 ### Technologies Used
 * [NodeJS](https://nodejs.org/) This is a cross-platform runtime environment built on Chrome's V8 JavaScript engine used in running JavaScript codes on the server. It allows for installation and managing of dependencies and communication with databases.
 * [NestJS](https://www.expresjs.org/) This is a NodeJS web application framework.
